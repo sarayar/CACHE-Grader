@@ -115,12 +115,12 @@ for j = 1:length(dirim)
         if regexp(patches(i).name,'RawMyoMask')
             continue
         end
-        if regexp(patches(i).name,'_mask2')% This is actually redundant because we already took care of "_mask"
+        if regexp(patches(i).name,'_mask2')
             continue
         end
         img_path = fullfile(patient_folder, patches(i).name);
         [~,patch_id,~] = fileparts(img_path);
-        mask1_path = fullfile(patient_folder, [patch_id '_mask.png']);% On July 5th I changed "_mask.png" to "_mask2.png" to use 5K condition this round and neglect small foci
+        mask1_path = fullfile(patient_folder, [patch_id '_mask.png']);
         mask2_path = fullfile(patient_folder, [patch_id '_MYOmask.png']);
         mask3_path = fullfile(patient_folder, [patch_id '_RawMyoMask.png']);
         mask4_path = fullfile(patient_folder, ['lymph_patch_3K_' patch_id '.png']);
@@ -134,7 +134,7 @@ for j = 1:length(dirim)
         mask=mask1.*mask2;% The mask for the foci in myocardium
         bounds=DLMask2bounds_function_noorginput(mask);
         
-        testFlag=bwconncomp(mask);% Here we check for 2 things: 1)the foci "mask" is not empty so that we don't spend making the graph 2)if the foci "mask" is empty we don't care for myocardium "MYOmask" that is multiplied in it
+        testFlag=bwconncomp(mask);
         
         
         mask3=imread(mask3_path);
@@ -148,12 +148,12 @@ for j = 1:length(dirim)
         LymphArea=sum(sum(imbinarize(LymphMask)));
         TissueArea=sum(sum(TissueMask));
         
-        Lymph_free_TissueMask=TissueMask-(TissueMask.*imbinarize(LymphMask)); %Requested by Eliot
+        Lymph_free_TissueMask=TissueMask-(TissueMask.*imbinarize(LymphMask)); 
         LymphFreeArea=sum(sum(Lymph_free_TissueMask));
         
-        LymphAreaRatio1=LymphArea/TissueArea; %Old version of lymphocyte area ratio(Thomas's)
+        LymphAreaRatio1=LymphArea/TissueArea; 
         
-        [aa bb cc]=size(img); %Getting the dimentions of the patch to calculate the whole area
+        [aa bb cc]=size(img); 
         TotalArea=aa*bb;
         
         MyoAreaRatio1=MyoArea/TotalArea;
@@ -183,12 +183,12 @@ for j = 1:length(dirim)
         
         mask5=imread(mask5_path);
 
-        LymphocyteArea=sum(sum(mask5));%Eliot mentioned as well
-        LymphAreaRatio2=LymphocyteArea/TissueArea;%Eliot mentioned as well
+        LymphocyteArea=sum(sum(mask5));
+        LymphAreaRatio2=LymphocyteArea/TissueArea;
         LymphAreaRatio3=LymphocyteArea/TotalArea;
-        LymphAreaRatio4=LymphocyteArea/MyoArea;%Eliot mentioned as well
-        LymphAreaRatio5=LymphocyteArea/RawMyoArea;%Eliot mentioned as well
-        LymphAreaRatio6=LymphocyteArea/LymphFreeArea;% Eliot proposed
+        LymphAreaRatio4=LymphocyteArea/MyoArea;
+        LymphAreaRatio5=LymphocyteArea/RawMyoArea;
+        LymphAreaRatio6=LymphocyteArea/LymphFreeArea;
         
         %Based on LymphArea in blue masks
         %Old Version Calculated Above (LymphAreaRatio1)=LymphArea/TissueArea;
@@ -197,9 +197,8 @@ for j = 1:length(dirim)
         LymphAreaRatio9=LymphArea/RawMyoArea;
         LymphAreaRatio10=LymphArea/LymphFreeArea;
         
-        %mask4_temp=bwconncomp(mask4);%THIS IS WERE I EDITED on June 20th BASED ON ELIOT's COMMENT
-        mask4_temp=bwconncomp(LymphMask);%MUST BE THE CORRECT ONE (It gettes the red regions out) 
-        FociCount=mask4_temp.NumObjects;% number of components in old 3k masks
+        mask4_temp=bwconncomp(LymphMask);
+        FociCount=mask4_temp.NumObjects;
         
         se1 = strel('disk',10); % a structuring element for morphological dilation
         Dil_mask=imdilate(mask,se1);
@@ -238,10 +237,10 @@ for j = 1:length(dirim)
             
 
 
-            Myo_FociGraphCount=FociGraphCount/MyoArea;% Eliot proposed
-            RawMyo_FociGraphCount=FociGraphCount/RawMyoArea;% Eliot proposed
-            Tissue_FociGraphCount=FociGraphCount/TissueArea;% Eliot proposed
-            LymphFreeTissue_FociGraphCount=FociGraphCount/LymphFreeArea;% Eliot proposed
+            Myo_FociGraphCount=FociGraphCount/MyoArea;
+            RawMyo_FociGraphCount=FociGraphCount/RawMyoArea;
+            Tissue_FociGraphCount=FociGraphCount/TissueArea;
+            LymphFreeTissue_FociGraphCount=FociGraphCount/LymphFreeArea;
             Tile_FociGraphCount=FociGraphCount/TotalArea;
             Lymph_FociGraphCount=FociGraphCount/LymphArea;
             
